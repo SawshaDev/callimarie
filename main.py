@@ -1,8 +1,8 @@
 import discord
 from discord.ext import commands
 
-token= "ODk5ODQzMTY2MTM0NDgwOTQ2.YW4qQQ.8aNTaViFD5C2AC67yHN07MG6FCs"
-prefix= "!"
+token= "Token"
+prefix= "Prefix"
 
 bot = commands.Bot(command_prefix=prefix)
 
