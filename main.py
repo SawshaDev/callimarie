@@ -1,3 +1,4 @@
+from collections import UserList
 import discord
 from discord import embeds
 from discord import client
@@ -14,7 +15,7 @@ from discord.ext import commands, tasks
 from itertools import cycle
 from discord.ext.commands import has_permissions, MissingPermissions
 
-token= "tokengoeshere"
+token= "token"
 prefix= ">"
 
 intents = discord.Intents.all()
@@ -23,31 +24,10 @@ bot = commands.Bot(command_prefix=prefix, intents=intents)
 bot.remove_command('help')
 
 
-
-
-
 @bot.event
 async def on_ready():
-    await bot.change_presence(status=discord.Status.do_not_disturb, activity=discord.Game(name="Doin' your mom!!!"))
+    await bot.change_presence(status=discord.Status.do_not_disturb, activity=discord.Game(name="Hola"))
     print(f"The bot is online")
-
-
-@bot.event
-async def ping(ctx):
-    await ctx.send(f":ping_pong: Pong!  {round(bot.latency*1000)}ms latency")
-
-
-@bot.event
-async def on_member_join(member):
-    welcome_channel = bot.get_channel(899893382120366091)
-    print(f"{member} has Joined")
-    await welcome_channel.send(f"{member.mention} has joined the server")
-
-@bot.event 
-async def on_member_remove(member):
-    print(f"{member} has left...")  
-    welcome_channel = bot.get_channel(899893382120366091)
-    await welcome_channel.send(f"{member.mention} has left the server")
 
 
 @bot.command()
@@ -57,7 +37,6 @@ async def embed(ctx, ch:discord.TextChannel):
     myembed.add_field(name="Rules:", value="This is an anarchy server, so the only one is,", inline=False)
     myembed.add_field(name="rule 1", value="Dont Break tos.", inline=False)
     myembed.set_footer(text="Callimarie's basement")
-    
     await ch.send(embed=myembed)   
 
 @bot.command()
@@ -67,25 +46,7 @@ async def ping(ctx):
     embed.set_footer(text= f'Requested By {ctx.author}', icon_url = ctx.author.avatar_url)
     await ctx.reply(embed = embed)
 
-@bot.command()
-@has_permissions(ban_members=True)
-async def ban(message, ban_member:discord.Member,*, reason=None):
-    if ban_member == bot.user:
-       await message.send(f"You can't ban me :sob:")
-    
-    elif ban_member.top_role >= message.author.top_role:
-        await message.send("this person has a higher role then yourself! :pensive:") 
-
-    else:
-        await ban_member.ban(reason=reason)      
-
-
-@ban.error
-async def ban_error(message, error):
-    if isinstance(error, MissingPermissions):
-        await message.send(f"you don't have permission to ban this member :sunglasses:")
  
-
 @bot.command()
 @has_permissions(kick_members=True)
 async def kick(message, kick_member:discord.Member,*, reason=None):
@@ -145,6 +106,34 @@ async def help(ctx):
     embed.add_field(name="unmute", value="unmutes member", inline=False)
     embed.set_footer(text= f'Help commands.', icon_url = 'https://cdn.discordapp.com/attachments/895448744999391267/900840208579297300/duck.gif ') 
     await ctx.send(embed=embed)    
+
+@bot.command()
+async def pinghelp(ctx):
+    embed=discord.Embed(Title="Ping Usage")
+    embed.add_field(name="Usage of ping", value=">ping", inline=False) 
+
+
+@bot.command()
+async def unban(ctx, *, member):
+	banned_users = await ctx.guild.bans()
+	
+	member_name, member_discriminator = member.split('#')
+	for ban_entry in banned_users:
+		user = ban_entry.user
+		
+		if (user.name, user.discriminator) == (member_name, member_discriminator):
+ 			await ctx.guild.unban(user)
+ 			await ctx.channel.send(f"Unbanned: {user.mention}")
+
+
+@bot.command()
+@has_permissions(ban_members=True)
+async def ban(ctx, user: discord.Member, *, reason="No reason provided"):
+        await user.ban(reason=reason)
+        ban = discord.Embed(title=f"succesfully banned {user.name} from this server", description=f"Reason: {reason}\nBy: {ctx.author.mention}")
+        await ctx.message.delete()
+        await ctx.channel.send(embed=ban)
+        await user.send(embed=ban)
 
 
 
