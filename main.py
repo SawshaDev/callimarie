@@ -15,7 +15,7 @@ from discord.ext import commands, tasks
 from itertools import cycle
 from discord.ext.commands import has_permissions, MissingPermissions
 
-token= "token"
+token= "Tokengoeshere"
 prefix= ">"
 
 intents = discord.Intents.all()
@@ -111,6 +111,7 @@ async def help(ctx):
 async def pinghelp(ctx):
     embed=discord.Embed(Title="Ping Usage")
     embed.add_field(name="Usage of ping", value=">ping", inline=False) 
+    await ctx.send(embed=embed)
 
 
 @bot.command()
@@ -135,6 +136,16 @@ async def ban(ctx, user: discord.Member, *, reason="No reason provided"):
         await ctx.channel.send(embed=ban)
         await user.send(embed=ban)
 
+@bot.command(pass_context=True)
+@commands.has_permissions(manage_messages=True)
+async def purge(ctx, limit: int):
+        await ctx.channel.purge(limit=limit)
+        await ctx.send('Cleared by {}'.format(ctx.author.mention))
+        await ctx.message.delete()
 
+@purge.error
+async def purge_error(ctx, error):
+    if isinstance(error, commands.MissingPermissions):
+        await ctx.send("You cant do that!")
 
 bot.run(token)
