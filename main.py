@@ -15,18 +15,18 @@ from discord.ext import commands, tasks
 from itertools import cycle
 from discord.ext.commands import has_permissions, MissingPermissions
 
-token= "Tokengoeshere"
+token= "token"
 prefix= ">"
 
-intents = discord.Intents.all()
 
-bot = commands.Bot(command_prefix=prefix, intents=intents)
+
+bot = commands.Bot(command_prefix=prefix, intents=discord.Intents.all())
 bot.remove_command('help')
 
 
 @bot.event
 async def on_ready():
-    await bot.change_presence(status=discord.Status.do_not_disturb, activity=discord.Game(name="Hola"))
+    await bot.change_presence(status=discord.Status.do_not_disturb, activity=discord.Game(name="fuck you, cry"))
     print(f"The bot is online")
 
 
@@ -49,20 +49,26 @@ async def ping(ctx):
  
 @bot.command()
 @has_permissions(kick_members=True)
-async def kick(message, kick_member:discord.Member,*, reason=None):
-    if kick_member == bot.user:
-       await message.send(f"You can't kick me :sob:")
+async def kick(ctx, user:discord.Member,*, reason=None):
+        await user.kick(reason=reason) 
+        kick = discord.Embed(title=f'Kicked: {user.mention} for {reason}')
     
-    elif kick_member.top_role >= message.author.top_role:
-        await message.send("this person has a higher role then yourself! :pensive:") 
-
-    else:
-        await kick_member.kick(reason=reason)      
+        if user == bot.user:
+          await ctx.send(f"You can't kick me :sob:")
+        
+        elif user.top_role >= ctx.author.top_role:
+            await ctx.send("this person has a higher role then yourself! :pensive:") 
+        
+        else:
+            await user.kick(reason=reason)  
+            await ctx.channel.send(embed=kick)
+            await user.send(embed=kick)   
+        
 
 @kick.error
-async def kick_error(message, error):
+async def kick_error(ctx, error):
     if isinstance(error, MissingPermissions):
-        await message.send( "you don't have permission to kick this member :sunglasses:")
+        await ctx.send( "you don't have permission to kick this member :sunglasses:")
 
 
 @bot.command(description="Mutes the specified user.")
@@ -92,19 +98,20 @@ async def unmute(ctx, member: discord.Member):
    
    await member.remove_roles(mutedRole)
    await member.send(f" you have unmuted from: {ctx.guild.name}")
-   embed = discord.Embed(title="unmute", description=f" unmuted {member.mention}",colour=discord.Colour.light_gray())
+   embed = discord.Embed(title="unmuted", description=f" unmuted {member.mention}",colour=discord.Colour.light_gray())
    await ctx.send(embed=embed)
 
 
 @bot.command()
 async def help(ctx):
     embed=discord.Embed(title="Commands")
-    embed.add_field(name="ping", value="Gets the bot latency.", inline=False)
-    embed.add_field(name="ban", value="Bans a member.", inline=False)
-    embed.add_field(name="kick", value="kicks a member.", inline=False)
-    embed.add_field(name="mute", value="mutes member.", inline=False)
-    embed.add_field(name="unmute", value="unmutes member", inline=False)
-    embed.set_footer(text= f'Help commands.', icon_url = 'https://cdn.discordapp.com/attachments/895448744999391267/900840208579297300/duck.gif ') 
+    embed.add_field(name="Ping", value="Gets the bot latency.", inline=False)
+    embed.add_field(name="Ban", value="Bans a member.", inline=False)
+    embed.add_field(name="Kick", value="kicks a member.", inline=False)
+    embed.add_field(name="Mute", value="mutes member.", inline=False)
+    embed.add_field(name="Unmute", value="unmutes member", inline=False)
+    embed.add_field(name="Purge", value="Purges specified amount of messages", inline=False)
+    embed.set_footer(text= f'Requested by {ctx.author}', icon_url = 'https://cdn.discordapp.com/attachments/895448744999391267/900840208579297300/duck.gif') 
     await ctx.send(embed=embed)    
 
 @bot.command()
@@ -140,7 +147,7 @@ async def ban(ctx, user: discord.Member, *, reason="No reason provided"):
 @commands.has_permissions(manage_messages=True)
 async def purge(ctx, limit: int):
         await ctx.channel.purge(limit=limit)
-        await ctx.send('Cleared by {}'.format(ctx.author.mention))
+        await ctx.send(f'Cleared {limit} Messages')
         await ctx.message.delete()
 
 @purge.error
