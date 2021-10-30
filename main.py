@@ -138,8 +138,7 @@ async def unban(ctx, *, member):
 @has_permissions(ban_members=True)
 async def ban(ctx, user: discord.Member, *, reason="No reason provided"):
         await user.ban(reason=reason)
-        ban = discord.Embed(title=f"succesfully banned {user.name} from this server", description=f"Reason: {reason}\nBy: {ctx.author.mention}")
-        await ctx.message.delete()
+        ban = discord.Embed(title=f"succesfully banned {user} from this server", description=f"Reason: {reason}\nBy: {ctx.author.mention}")
         await ctx.channel.send(embed=ban)
         await user.send(embed=ban)
 
