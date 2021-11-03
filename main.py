@@ -15,7 +15,7 @@ from discord.ext import commands, tasks
 from itertools import cycle
 from discord.ext.commands import has_permissions, MissingPermissions
 
-token= "token"
+token= "Token"
 prefix= ">"
 
 
