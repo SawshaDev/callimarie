@@ -15,7 +15,7 @@ from discord.ext import commands, tasks
 from itertools import cycle
 from discord.ext.commands import has_permissions, MissingPermissions
 
-token= "token"
+token= "Token"
 prefix= ">"
 
 
@@ -153,5 +153,12 @@ async def purge(ctx, limit: int):
 async def purge_error(ctx, error):
     if isinstance(error, commands.MissingPermissions):
         await ctx.send("You cant do that!")
+
+@bot.command()
+async def support(ctx):
+    embed=discord.Embed()
+    embed.add_field(name="Join The official support!", value="https://discord.gg/nMx67EAzRd", inline=False)
+    embed.set_footer(text= f'Requested By {ctx.author}', icon_url = 'https://cdn.discordapp.com/attachments/895448744999391267/900840208579297300/duck.gif')
+    await ctx.send(embed=embed)
 
 bot.run(token)
