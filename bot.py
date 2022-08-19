@@ -8,4 +8,4 @@ class Callimarie(commands.Bot):
 
         
     async def run(self):
-        await self.start("")
+        await self.start(token)
