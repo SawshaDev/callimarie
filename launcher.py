@@ -1,5 +1,6 @@
 from __future__ import annotations
 import logging
+import os
 from typing import TYPE_CHECKING
 from core.bot import callimarie
 from config import token
@@ -14,12 +15,13 @@ discord.utils.setup_logging()
 async def main():
     async with callimarie() as bot:
         await bot.load_extension("jishaku")
-        for file in sorted(pathlib.Path("cogs").glob("**/[!_]*.py")):
-            ext = ".".join(file.parts).removesuffix(".py")
-            try:
-                await bot.load_extension(ext)
-            except Exception as error:
-                LOGGER.exception("Failed to load extension: %s\n\n%s", ext, error)
+        exts = [
+            f"cogs.{ext if not ext.endswith('.py') else ext[:-3]}"
+            for ext in os.listdir("cogs")
+            if not ext.startswith("_")
+        ]
+        for ext in exts:
+            await bot.load_extension(ext)
         await bot.run(token)
 
 asyncio.run(main())
