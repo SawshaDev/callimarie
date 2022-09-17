@@ -2,10 +2,10 @@ import traceback
 from typing import Optional
 import discord
 from discord.ext import commands
-from core.bot import callimarie
+from core.bot import CallimarieBot
 
 class owner(commands.Cog):
-    def __init__(self, bot: callimarie):
+    def __init__(self, bot: CallimarieBot):
         self.bot = bot
     
     @commands.command()
