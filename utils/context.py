@@ -14,10 +14,7 @@ if TYPE_CHECKING:
     from asyncpg import Pool, Connection
     from aiohttp import ClientSession
     
-class Context(commands.Context):
-
-    """An custom context class that might not be used much since rewrite is for slash commands (it's good to have though) ;-;"""
-    
+class Context(commands.Context):    
     channel: Union[discord.VoiceChannel, discord.TextChannel, discord.Thread, discord.DMChannel]
     prefix: str
     command: commands.Command[Any, ..., Any]
